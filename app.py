@@ -75,19 +75,41 @@ app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
 ])
  
 @app.callback(dash.dependencies.Output('buttons', 'children'), 
-    [dash.dependencies.Input('dropdownButton', 'n_clicks')]
-)
-def show_dropDowns(n_clicks):
-    if (n_clicks == None):
+    [   dash.dependencies.Input('dropdownButton', 'n_clicks'), dash.dependencies.Input('tableButton', 'n_clicks'),
+        dash.dependencies.Input('dropdownButton', 'n_clicks_timestamp'), dash.dependencies.Input('tableButton', 'n_clicks_timestamp')
+    ])
+def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
+    if (dropDownClick == None and tableClick == None):
         return []
-    else:
-        return [ dcc.Dropdown(
+    elif (dropDownClick != None and tableClick == None):
+        content= [ dcc.Dropdown(
                 id='columnNames',
                 options=[{'label': i, 'value': i} for i in df.columns.values],
             ), 
             dcc.Dropdown(
                 id='columnValues',
             ) ]
+    elif (dropDownTS > tableTS):
+        content= [ dcc.Dropdown(
+                id='columnNames',
+                options=[{'label': i, 'value': i} for i in df.columns.values],
+            ), 
+            dcc.Dropdown(
+                id='columnValues',
+            ) ]
+    else:
+        content= [ dash_table.DataTable(
+            id='table', 
+            columns=[{"name": i, "id": i} for i in df.columns],
+            style_table={
+                'maxHeight': '300',
+                'overflowY': 'scroll'
+            },
+            style_cell={'width': '150px'},
+            data=df.to_dict("rows")) ]
+    return content
+
+
 
 
 @app.callback(dash.dependencies.Output('columnValues', 'options'),
