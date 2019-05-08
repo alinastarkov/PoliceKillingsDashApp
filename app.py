@@ -71,25 +71,23 @@ app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
     ), 
     html.Button('Table to filter the map', id='tableButton'),
     html.Button('Dropdown to filter the map', id='dropdownButton'),
-    html.Div([
-            dcc.Dropdown(
+    html.Div(children=[], style={'textAlign': 'center'}, id='buttons'),  
+])
+ 
+@app.callback(dash.dependencies.Output('buttons', 'children'), 
+    [dash.dependencies.Input('dropdownButton', 'n_clicks')]
+)
+def show_dropDowns(n_clicks):
+    if (n_clicks == None):
+        return []
+    else:
+        return [ dcc.Dropdown(
                 id='columnNames',
                 options=[{'label': i, 'value': i} for i in df.columns.values],
             ), 
             dcc.Dropdown(
                 id='columnValues',
-            )
-    ], style={'textAlign': 'center', 'display': 'none'}, id='buttons'),  
-])
- 
-@app.callback(dash.dependencies.Output('buttons', 'style'), 
-    [dash.dependencies.Input('dropdownButton', 'n_clicks')]
-)
-def show_dropDowns(n_clicks):
-    if (n_clicks == None):
-        return {'display': 'none'}
-    else:
-        return {'display': 'block'}
+            ) ]
 
 
 @app.callback(dash.dependencies.Output('columnValues', 'options'),
