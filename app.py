@@ -25,7 +25,6 @@ layout_map = dict(
     plot_bgcolor='#fffcfc',
     paper_bgcolor='#fffcfc',
     legend=dict(font=dict(size=10), orientation='h'),
-    title='Police Killings Map ',
     mapbox=dict(
         accesstoken=mapbox_access_token,
         style="light",
@@ -38,7 +37,7 @@ layout_map = dict(
 )
 
 app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
-    html.H1(children="Map of police killings in the United States ", style={
+    html.H1(id="abc", children="Map of police killings in the United States ", style={
             'font-weight': 'bold',
             'font-family': 'helvetica',
             'textAlign': 'center',
@@ -60,17 +59,17 @@ app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
                                 for i,j in zip(df['name'], df['cause'])],
                 "name": list(df['name']),
                 "marker": {
-                    "size": 6,
+                    "size": 8,
                     "opacity": 0.7
                 }
         }],
         "layout": layout_map
         },
            style={'margin-top': '20'})
-        ], className= 'twelve columns'
+        ], className= 'twelve columns', id="graph-container"
     ), 
-    html.Button('Table to filter the map', id='tableButton'),
-    html.Button('Dropdown to filter the map', id='dropdownButton'),
+    html.Div([html.Button('Table to filter the map', id='tableButton'),
+    html.Button('Dropdown to filter the map', id='dropdownButton')],style={'text-align': 'center'}),
     html.Div(children=[], style={'textAlign': 'center'}, id='buttons'),  
 ])
  
@@ -89,6 +88,22 @@ def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
             dcc.Dropdown(
                 id='columnValues',
             ) ]
+    elif (tableClick != None and dropDownClick == None):
+        content = [ dash_table.DataTable(
+            id='dataTable', 
+            columns=[{"name": i, "id": i} for i in df.columns],
+            row_selectable='multi',
+            selected_rows=[],
+            filtering=True,
+            sorting_type='multi',
+            row_deletable=True,
+            sorting=True,
+            style_cell={'width': '150px'},
+            style_table={
+                'maxHeight': '300',
+                'overflowY': 'scroll'
+            },
+            data=df.to_dict("rows")) ]
     elif (dropDownTS > tableTS):
         content= [ dcc.Dropdown(
                 id='columnNames',
@@ -99,18 +114,21 @@ def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
             ) ]
     else:
         content= [ dash_table.DataTable(
-            id='table', 
+            id='dataTable', 
             columns=[{"name": i, "id": i} for i in df.columns],
+            row_selectable='multi',
+            sorting_type='multi',
+            selected_rows=[],
+            filtering=True,
+            row_deletable=True,
+            sorting=True,
+            style_cell={'width': '150px'},
             style_table={
                 'maxHeight': '300',
                 'overflowY': 'scroll'
             },
-            style_cell={'width': '150px'},
             data=df.to_dict("rows")) ]
     return content
-
-
-
 
 @app.callback(dash.dependencies.Output('columnValues', 'options'),
     [dash.dependencies.Input('columnNames', 'value')]
@@ -122,7 +140,8 @@ def update_columnValues(columnNames):
         return [{'label': i, 'value': i} for i in df[columnNames].unique()]
 
 @app.callback(dash.dependencies.Output('map-graph', 'figure'),
-    [dash.dependencies.Input('columnNames', 'value'), dash.dependencies.Input('columnValues', 'value')]
+    [dash.dependencies.Input('columnNames', 'value'), dash.dependencies.Input('columnValues', 'value'),
+    ]
 )
 def update_graphBasedOnColumnNames(columnNames, columnValues):
     traces = []
@@ -155,6 +174,45 @@ def update_graphBasedOnColumnNames(columnNames, columnValues):
     "layout": layout_map
     }
 
+@app.callback(
+    dash.dependencies.Output('graph-container', "children"),
+    [dash.dependencies.Input('dataTable', "derived_virtual_data"), dash.dependencies.Input('dataTable', "derived_virtual_selected_rows")])
+def update_graph(newData, derived_virtual_selected_rows):
+    if newData is None:
+        dff = df
+    else:
+        dff = pd.DataFrame(newData)
+    latArray = []
+    longArray = [] 
+    if (derived_virtual_selected_rows != []):
+        for i in derived_virtual_selected_rows:
+            lon = dff.loc[i,'longitude']
+            lat = dff.loc[i,'latitude']
+            latArray.append(str(lat))
+            longArray.append(str(lon))
+    else:
+        longArray = list(dff['longitude'])
+        latArray = list(dff['latitude'])
+    return [
+        dcc.Graph(
+            id='map-graph',
+            config={
+            'scrollZoom': True },
+            figure={
+        "data": [{
+                "type": "scattermapbox",
+                "lat": latArray,
+                "lon": longArray,
+                "mode": "markers",
+                "marker": {
+                    "size": 8,
+                    "opacity": 0.7
+                }
+        }],
+        "layout": layout_map
+        },
+           style={'margin-top': '20'})
+        ]
 
 
 if __name__ == '__main__':
