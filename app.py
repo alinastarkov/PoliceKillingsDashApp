@@ -68,8 +68,8 @@ app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
            style={'margin-top': '20'})
         ], className= 'twelve columns', id="graph-container"
     ), 
-    html.Div([html.Button('Table to filter the map', id='tableButton'),
-    html.Button('Dropdown to filter the map', id='dropdownButton')],style={'text-align': 'center'}),
+    html.Div([html.Button('Table to filter the map', id='tableButton', style={'text-align': 'center', 'margin-right': '5px'}),
+    html.Button('Dropdown to filter the map', id='dropdownButton')],style={'text-align': 'center', 'margin-right': '5px'}),
     html.Div(children=[], style={'textAlign': 'center'}, id='buttons'),  
 ])
  
@@ -83,35 +83,44 @@ def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
     elif (dropDownClick != None and tableClick == None):
         content= [ dcc.Dropdown(
                 id='columnNames',
+                style={'width':'50%','margin':'auto', 'margin-top': '1%'},
                 options=[{'label': i, 'value': i} for i in df.columns.values],
             ), 
             dcc.Dropdown(
                 id='columnValues',
+                style={'width':'50%','margin':'auto', 'margin-top': '0.5%'}
             ) ]
     elif (tableClick != None and dropDownClick == None):
         content = [ dash_table.DataTable(
-            id='dataTable', 
+             id='dataTable', 
             columns=[{"name": i, "id": i} for i in df.columns],
             row_selectable='multi',
+            sorting_type='multi',
             selected_rows=[],
             filtering=True,
-            sorting_type='multi',
             row_deletable=True,
             sorting=True,
+            n_fixed_rows=1,
             style_cell={'width': '150px'},
             style_table={
                 'maxHeight': '300',
-                'overflowY': 'scroll'
+                'overflowY': 'scroll',
+                'overflowX': 'scroll',
+                'margin-top': '1%'
+
             },
             data=df.to_dict("rows")) ]
     elif (dropDownTS > tableTS):
         content= [ dcc.Dropdown(
                 id='columnNames',
                 options=[{'label': i, 'value': i} for i in df.columns.values],
+                style={'width':'50%','margin':'auto', 'margin-top': '1%'}
+
             ), 
             dcc.Dropdown(
                 id='columnValues',
-            ) ]
+                style={'width':'50%','margin':'auto', 'margin-top': '0.5%'}
+            )]
     else:
         content= [ dash_table.DataTable(
             id='dataTable', 
@@ -122,10 +131,13 @@ def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
             filtering=True,
             row_deletable=True,
             sorting=True,
+            n_fixed_rows=1,
             style_cell={'width': '150px'},
             style_table={
                 'maxHeight': '300',
-                'overflowY': 'scroll'
+                'overflowY': 'scroll',
+                'overflowX': 'scroll',
+                'margin-top': '1%'
             },
             data=df.to_dict("rows")) ]
     return content
