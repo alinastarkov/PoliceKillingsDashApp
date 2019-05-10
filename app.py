@@ -10,7 +10,7 @@ from dash.exceptions import PreventUpdate
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.config.supress_callback_exceptions = True #find a different -> prevent update 
+app.config.supress_callback_exceptions = True
 
 mapbox_access_token = 'pk.eyJ1IjoiaGF5bGVlbHV1IiwiYSI6ImNqdmR1ZTduYTA3MGQ0NHM3b3E1YThzczYifQ.Fu_BQlF0VnqAVpbWFNY_8A'
 
@@ -18,12 +18,13 @@ df = pd.read_csv('police_killings.csv')
 
 layout_map = dict(
     autosize=True,
-    font=dict(color="#191A1A"),
-    titlefont=dict(color="#191A1A", size='14'),
+    font=dict(color="#292D4E"),
+    titlefont=dict(color="#292D4E", size='14'),
     hovermode="closest",
+    width='1500',
     height='600',
-    plot_bgcolor='#fffcfc',
-    paper_bgcolor='#fffcfc',
+    plot_bgcolor='#E6E6E9',
+    paper_bgcolor='#E6E6E9',
     legend=dict(font=dict(size=10), orientation='h'),
     mapbox=dict(
         accesstoken=mapbox_access_token,
@@ -36,13 +37,11 @@ layout_map = dict(
     )
 )
 
-app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
-    html.H1(id="abc", children="Map of police killings in the United States ", style={
-            'font-weight': 'bold',
-            'font-family': 'helvetica',
-            'textAlign': 'center',
-            'color': '#1B1B1C'
-        }),
+app.layout = html.Div(style={'backgroundColor': '#292D4E' }, children=[
+    html.H1(id="header", children="Map of police killings in the United States ", className="text"),
+    html.H2(children="In 2015,", className="text"),
+    html.H1("1",id="number", className="counter"),
+    html.Div(className="text", children=[dcc.Markdown('''## people never returned to their families''')]),
     html.Div([
         dcc.Graph(
             id='map-graph',
@@ -66,10 +65,10 @@ app.layout = html.Div(style={'backgroundColor': 'white'}, children=[
         "layout": layout_map
         },
            style={'margin-top': '20'})
-        ], className= 'twelve columns', id="graph-container"
+        ], className= 'graph', id="graph-container"
     ), 
-    html.Div([html.Button('Table to filter the map', id='tableButton', style={'text-align': 'center', 'margin-right': '5px'}),
-    html.Button('Dropdown to filter the map', id='dropdownButton')],style={'text-align': 'center', 'margin-right': '5px'}),
+    html.Div([html.Button('Table to filter the map', id='tableButton', style={'text-align': 'center', 'margin-right': '5px'}, className= 'allButtons'),
+    html.Button('Dropdown to filter the map', id='dropdownButton', className= 'allButtons')], style={'text-align': 'center'}) ,
     html.Div(children=[], style={'textAlign': 'center'}, id='buttons'),  
 ])
  
