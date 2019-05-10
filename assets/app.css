@@ -17,10 +17,10 @@ html{
 
 .counter {
     font-size: 150px;
-    margin: 0 0 0 44%;
+    text-align: center;
     font-weight: 700;
+    margin: 0 auto;
     color: #e92d53;
-    width: 1ch;
     height: 1em;
     font-family: 'Montserrat', sans-serif;
 }
@@ -30,8 +30,16 @@ html{
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
+.bcButton {
+    margin: 10px auto;
+    display: flex;
+    background-color: #E6E6E9;
+    color: #e92d53;
+}
+
 .graph {
-    margin-left: 15%;
+    display: flex;
+    justify-content: center;
 }
 
 .mapboxgl-map {

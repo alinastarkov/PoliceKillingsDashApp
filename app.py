@@ -4,6 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 import plotly.graph_objs as go
+from datetime import datetime as dt
 from dash.exceptions import PreventUpdate
 
 
@@ -15,6 +16,9 @@ app.config.supress_callback_exceptions = True
 mapbox_access_token = 'pk.eyJ1IjoiaGF5bGVlbHV1IiwiYSI6ImNqdmR1ZTduYTA3MGQ0NHM3b3E1YThzczYifQ.Fu_BQlF0VnqAVpbWFNY_8A'
 
 df = pd.read_csv('police_killings.csv')
+df = df[["name", "age", "gender", "raceethnicity", "month", "state","latitude" ,"longitude", "cause", "armed"]].drop_duplicates()
+
+
 
 layout_map = dict(
     autosize=True,
@@ -40,8 +44,9 @@ layout_map = dict(
 app.layout = html.Div(style={'backgroundColor': '#292D4E' }, children=[
     html.H1(id="header", children="Map of police killings in the United States ", className="text"),
     html.H2(children="In 2015,", className="text"),
-    html.H1("1",id="number", className="counter"),
+    html.H1(children="0",id="number", className="counter"),
     html.Div(className="text", children=[dcc.Markdown('''## people never returned to their families''')]),
+    html.Button('Click here to read the stories', id='barChartButton', className='bcButton'),
     html.Div([
         dcc.Graph(
             id='map-graph',
@@ -83,16 +88,18 @@ def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
         content= [ dcc.Dropdown(
                 id='columnNames',
                 style={'width':'50%','margin':'auto', 'margin-top': '1%'},
-                options=[{'label': i, 'value': i} for i in df.columns.values],
+                options=[{'label': i, 'value': i} for i in df.columns.values if i != 'name' and i != 'longitude' and i != 'latitude' ],
             ), 
             dcc.Dropdown(
                 id='columnValues',
                 style={'width':'50%','margin':'auto', 'margin-top': '0.5%'}
-            ) ]
+            ),
+            
+            ]
     elif (tableClick != None and dropDownClick == None):
         content = [ dash_table.DataTable(
              id='dataTable', 
-            columns=[{"name": i, "id": i} for i in df.columns],
+            columns=[{"name": i, "id": i} for i in df.columns if i != 'name' and i != 'longitude' and i!= 'latitude'],
             row_selectable='multi',
             sorting_type='multi',
             selected_rows=[],
@@ -112,7 +119,7 @@ def show_dropDowns(dropDownClick, tableClick, dropDownTS, tableTS):
     elif (dropDownTS > tableTS):
         content= [ dcc.Dropdown(
                 id='columnNames',
-                options=[{'label': i, 'value': i} for i in df.columns.values],
+                options=[{'label': i, 'value': i} for i in df.columns.values if i != 'name' and i != 'longitude' and i!= 'latitude'],
                 style={'width':'50%','margin':'auto', 'margin-top': '1%'}
 
             ), 
