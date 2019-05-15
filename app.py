@@ -188,6 +188,9 @@ def update_graphBasedOnColumnNames(columnNames, columnValues):
                 lon=df[df[columnNames] == columnValues]['longitude'],
                 mode='markers',
                 name=columnValues,
+                hoverinfo= "text",
+                hovertext= [["Name: {} <br>Cause: {}".format(i,j)]
+                                for i,j in zip(df['name'], df['cause'])],
                 marker=go.scattermapbox.Marker(
                     size=8,
                     opacity=1
@@ -198,6 +201,9 @@ def update_graphBasedOnColumnNames(columnNames, columnValues):
                 lat=df[df[columnNames] == i]['latitude'],
                 lon=df[df[columnNames] == i]['longitude'],
                 name=i,
+                hoverinfo= "text",
+                hovertext= [["Name: {} <br>Cause: {}".format(i,j)]
+                                for i,j in zip(df['name'], df['cause'])],
                 mode='markers',
                 marker=go.scattermapbox.Marker(
                     size=8,
@@ -239,6 +245,10 @@ def update_graph(newData, derived_virtual_selected_rows):
                 "lat": latArray,
                 "lon": longArray,
                 "mode": "markers",
+                "hoverinfo": "text",
+                "hovertext": [["Name: {} <br>Cause: {}".format(i,j)]
+                                for i,j in zip(df['name'], df['cause'])],
+                "name": list(df['name']),
                 "marker": {
                     "size": 8,
                     "opacity": 0.7
