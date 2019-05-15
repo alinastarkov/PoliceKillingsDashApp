@@ -12,5 +12,5 @@ incrementNumber = setInterval(function(){
         var newNum = number +=1 
         document.getElementById('number').innerHTML = newNum
     }
-}, 25)
+}, 10)
 

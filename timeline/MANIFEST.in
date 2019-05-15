@@ -1,0 +1,5 @@
+include timeline/timeline.min.js
+include timeline/timeline.dev.js
+include timeline/metadata.json
+include timeline/package.json
+include README.md

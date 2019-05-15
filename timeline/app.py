@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.graph_objs as go
 from datetime import datetime as dt
 from dash.exceptions import PreventUpdate
+import timeline
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -41,12 +42,12 @@ layout_map = dict(
     )
 )
 
-app.layout = html.Div(style={'backgroundColor': '#292D4E' }, children=[
+app.layout = html.Div(id="bodyContent", style={'backgroundColor': '#292D4E' }, children=[
     html.H1(id="header", children="Map of police killings in the United States ", className="text"),
     html.H2(children="In 2015,", className="text"),
     html.H1(children="0",id="number", className="counter"),
     html.Div(className="text", children=[dcc.Markdown('''## people never returned to their families''')]),
-    html.Button('Click here to read the stories', id='barChartButton', className='bcButton'),
+    html.Button('Click here to read the stories', id='timelineButton', className='bcButton'),
     html.Div([
         dcc.Graph(
             id='map-graph',
@@ -76,7 +77,20 @@ app.layout = html.Div(style={'backgroundColor': '#292D4E' }, children=[
     html.Button('Dropdown to filter the map', id='dropdownButton', className= 'allButtons')], style={'text-align': 'center'}) ,
     html.Div(children=[], style={'textAlign': 'center'}, id='buttons'),  
 ])
- 
+
+@app.callback(dash.dependencies.Output('bodyContent', 'children'), 
+    [   dash.dependencies.Input('timelineButton', 'n_clicks')
+    ])
+def show_timeLine(n_clicks):
+    return html.Div([
+    timeline.timeline(
+        id='input',
+        value='my-value',
+        label='my-label'
+    ),
+    html.Div(id='output')
+])
+
 @app.callback(dash.dependencies.Output('buttons', 'children'), 
     [   dash.dependencies.Input('dropdownButton', 'n_clicks'), dash.dependencies.Input('tableButton', 'n_clicks'),
         dash.dependencies.Input('dropdownButton', 'n_clicks_timestamp'), dash.dependencies.Input('tableButton', 'n_clicks_timestamp')
